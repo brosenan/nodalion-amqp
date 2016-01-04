@@ -1,7 +1,6 @@
 "use strict";
 var $S = require('suspend'), $R = $S.resume;
-var Nodalion = require('./nodalion.js');
-var serializeTerm = require('./serializeTerm.js');
+var Nodalion = require('nodalion');
 
 var PREFETCH = 10;
 
@@ -24,7 +23,7 @@ function waitForConnection(cb) {
 
 function handleDataForSpec(nodalion, spec, worker) {
     return function(data) {
-	var term = serializeTerm.decodeTerm(data, []);
+	var term = Nodalion.decodeTerm(data, []);
 	nodalion.findAll([], ns.applyWork(term, spec[2], spec[1], spec[3]), function(err) {
 	    if(err) {
 		console.error(err.stack);
@@ -34,7 +33,7 @@ function handleDataForSpec(nodalion, spec, worker) {
     };
 }
 
-var doConnect = $S.async(function*(nodalion, url, domain) {
+var doConnect = $S.callback(function*(nodalion, url, domain) {
     var context = require('rabbit.js').createContext(url);
     var workerSpecs = yield nodalion.findAll([{var:'Name'}, {var:'X'}, {var:'T'}, {var:'Impred'}],
 					     ns.workQueue(domain, {var:'Name'}, {var:'X'}, {var:'T'}, {var:'Impred'}), $R());
@@ -64,23 +63,23 @@ exports.connect = function(nodalion, url, domain) {
 };
 
 ns._register('enqueue', function(Queue, Term, Type) {
-    return $S.async(function*(nodalion) {
+    return $S.callback(function*(nodalion) {
 	yield waitForConnection($R());
 	var topic = topics[Queue];
 	if(!topic) throw Error("Bad queue: " + Queue + ' available topics: ' + Object.keys(topics).join(', '));
-	topic.pusher.write(serializeTerm.encodeTerm(Term, {}));
+	topic.pusher.write(Nodalion.encodeTerm(Term, {}));
 	return '';
     });
 });
 
 ns._register('findAll', function(Res, Impred) {
-    return $S.async(function*(nodalion) {
+    return $S.callback(function*(nodalion) {
 	return yield nodalion.findAll(Res, Impred, $R());
     });
 });
 
 ns._register('par', function(Task1, Task2) {
-    return $S.async(function*(nodalion) {
+    return $S.callback(function*(nodalion) {
 	Task1.meaning()(nodalion, $S.fork());
 	Task2.meaning()(nodalion, $S.fork());
 	var results = yield $S.join();

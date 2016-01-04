@@ -1,0 +1,35 @@
+{
+  "name": "nodalion-amqp",
+  "version": "1.0.0",
+  "description": "AMQP work queue implementation for Nodalion",
+  "main": "workQueue.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+      "test": "docker run -i --link=rabbitmq -v $PWD:/project brosenan/nodalion npm run-script test-in-container",
+      "test-in-container": "./node_modules/mocha/bin/mocha -C -R dot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brosenan/nodalion-amqp.git"
+  },
+  "keywords": [
+    "amqp",
+    "rabbitmq",
+    "nodalion",
+    "cedalion"
+  ],
+  "author": "Boaz Rosenan <brosenan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brosenan/nodalion-amqp/issues"
+  },
+  "homepage": "https://github.com/brosenan/nodalion-amqp#readme",
+  "dependencies": {
+    "mocha": "^2.3.4",
+    "nodalion": "^1.0.5",
+    "rabbit.js": "^0.4.4",
+    "suspend": "^0.7.0"
+  }
+}

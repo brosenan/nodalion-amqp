@@ -3,21 +3,17 @@ var assert  = require('assert');
 var $S = require('suspend'), $R = $S.resume, $T = function(gen) { return function(done) { $S.run(gen, done); } };
 
 var workQueue = require('../workQueue.js');
-var cedParser = require('../cedParser.js');
 
-var nodalion = require('../nodalion.js');
-
-var parser = new cedParser.CedParser();
+var nodalion = require('nodalion');
 
 var ns = nodalion.namespace('/nodalion', ['enqueue', 'findAll', 'par', 'testParallel']);
 var bs = nodalion.namespace('/bootstrap', ['listMember', 'pair']);
 var impred = nodalion.namespace('/impred', ['pred']);
 var example = nodalion.namespace('example', ['myQueueDomain', 'foo', 'bar', 'baz', 'bat']);
-var n = new nodalion('/tmp/workQ-ced.log');
+var n = new nodalion(nodalion.__dirname + '/prolog/cedalion.pl', '/tmp/workQ-ced.log');
 
 var doTask = function(term, cb) {
-    var task = parser.parse(term.toString()).meaning();
-    task(n, cb);
+    term.meaning()(n, cb);
 };
 
 var stored = [];
