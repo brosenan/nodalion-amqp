@@ -1,6 +1,6 @@
 {
   "name": "nodalion-amqp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AMQP work queue implementation for Nodalion",
   "main": "workQueue.js",
   "directories": {
